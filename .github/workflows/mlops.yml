@@ -1,0 +1,34 @@
+name: MLOps Drift Monitor
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  check_data_drift:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Data Science Tools
+        run: pip install pandas numpy scikit-learn onnx skl2onnx
+
+      - name: Run the Detective (Phase 4)
+        id: monitor
+        run: python monitor.py
+        continue-on-error: true
+
+      - name: Retrain Model if Drift Detected
+        if: steps.monitor.outcome == 'failure'
+        run: |
+          echo "Drift detected! Running train.py to build a new AI..."
+          python train.py
+          echo "New model successfully generated and saved!"

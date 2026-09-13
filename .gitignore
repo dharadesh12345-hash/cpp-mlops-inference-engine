@@ -1,0 +1,8 @@
+# Ignore C++ compiled programs
+*.exe
+
+# Ignore massive Microsoft Debug files
+*.pdb
+
+# Ignore Python cache
+__pycache__/
